@@ -4,7 +4,10 @@ import psycopg2
 import secrets
 import datetime
 
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)
 
 # Get the database URL from your environment variables (set this in Render!)
 DATABASE_URL = os.environ.get('DATABASE_URL')
