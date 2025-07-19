@@ -1,15 +1,10 @@
-import os
 from flask import Flask, request, jsonify
 import psycopg2
-import secrets
-import datetime
-
+import os, secrets, datetime
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-
-# Get the database URL from your environment variables (set this in Render!)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db():
@@ -24,28 +19,27 @@ def recover():
 
     conn = get_db()
     cur = conn.cursor()
-
-    # Check if user exists
+    # Only look up existing user
     cur.execute("SELECT id FROM users WHERE email = %s", (email,))
     user = cur.fetchone()
 
-    token = secrets.token_urlsafe(32)
-    expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).isoformat()
-
     if user:
         user_id = user[0]
+        token = secrets.token_urlsafe(32)
+        expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).isoformat()
         cur.execute("UPDATE users SET reset_token=%s, token_expiry=%s WHERE id=%s", (token, expiry, user_id))
+        conn.commit()
+        conn.close()
+        # Send reset link here (placeholder for actual email logic)
+        print(f"[SEND EMAIL] Password reset for {email}: https://leosbakery1310.com/pages/reset-password?token={token}")
+        return jsonify(success=True, message="Check your email for a password reset link!")
     else:
-        cur.execute("INSERT INTO users (email, reset_token, token_expiry) VALUES (%s, %s, %s)", (email, token, expiry))
-    conn.commit()
-    conn.close()
+        conn.close()
+        # No user found—don't reveal this to end user
+        return jsonify(success=True, message="Check your email for a password reset link!")
+        # PLACEHOLDER: Here is where NEW USER logic would eventually go
 
-    # Here, you would send the email with the reset link (see below)
-    print(f"Send password reset to {email}: https://leosbakery1310.com/pages/reset-password?token={token}")
-
-    return jsonify(success=True)
-
-# Database initialization for Postgres
+# -- Database initialization for reference --
 def init_db():
     conn = get_db()
     cur = conn.cursor()
