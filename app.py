@@ -36,7 +36,7 @@ def recover():
     else:
         conn.close()
         # No user found—don't reveal this to end user
-        return jsonify(success=True, message="Check your email for a password reset link!")
+        return jsonify(success=True, message="Check your email")
         # PLACEHOLDER: Here is where NEW USER logic would eventually go
 
 # -- Database initialization for reference --
