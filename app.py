@@ -1,7 +1,27 @@
+
 from flask import Flask, request, jsonify
 import psycopg2
 import os, secrets, datetime
 from flask_cors import CORS
+import sendgrid
+from sendgrid.helpers.mail import Mail
+
+def send_reset_email(to_email, token):
+    sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY'))
+    html_content = f"""
+        <img src='https://YOUR_LOGO_URL_TOP.png' style='width:120px;'><br><br>
+        <p>You forgot your password again, didn't ya? Yeah, yeah, we know, we know .. Click the link below. You've got 1 minute.</p>
+        <a href="https://leosbakery1310.com/pages/reset-password?token={token}">Reset Password</a>
+        <br><br>
+        <img src='https://YOUR_LOGO_URL_BOTTOM.png' style='width:60px;'>
+    """
+    message = Mail(
+        from_email='support@leosbakery1310.com',
+        to_emails=to_email,
+        subject="Leo's Bakery",
+        html_content=html_content
+    )
+    sg.send(message)
 
 app = Flask(__name__)
 CORS(app)
@@ -31,7 +51,7 @@ def recover():
         conn.commit()
         conn.close()
         # Send reset link here (placeholder for actual email logic)
-        print(f"[SEND EMAIL] Password reset for {email}: https://leosbakery1310.com/pages/reset-password?token={token}")
+        send_reset_email(email, token)
         return jsonify(success=True, message="Check your email for a password reset link!")
     else:
         conn.close()
