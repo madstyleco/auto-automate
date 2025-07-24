@@ -19,32 +19,25 @@ def recover():
 
     conn = get_db()
     cur = conn.cursor()
-    # Always create token and expiry
-    token = secrets.token_urlsafe(32)
-    expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).isoformat()
-
+    # Only look up existing user
     cur.execute("SELECT id FROM users WHERE email = %s", (email,))
     user = cur.fetchone()
 
     if user:
         user_id = user[0]
-        cur.execute(
-            "UPDATE users SET reset_token=%s, token_expiry=%s WHERE id=%s",
-            (token, expiry, user_id)
-        )
+        token = secrets.token_urlsafe(32)
+        expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).isoformat()
+        cur.execute("UPDATE users SET reset_token=%s, token_expiry=%s WHERE id=%s", (token, expiry, user_id))
+        conn.commit()
+        conn.close()
+        # Send reset link here (placeholder for actual email logic)
+        print(f"[SEND EMAIL] Password reset for {email}: https://leosbakery1310.com/pages/reset-password?token={token}")
+        return jsonify(success=True, message="Check your email for a password reset link!")
     else:
-        # Create new user with empty password (could add more fields as needed)
-        cur.execute(
-            "INSERT INTO users (email, reset_token, token_expiry) VALUES (%s, %s, %s)",
-            (email, token, expiry)
-        )
-    conn.commit()
-    conn.close()
-
-    # ----> Send the email here! (plug in real email logic)
-    print(f"[SEND EMAIL] Password reset for {email}: https://leosbakery1310.com/pages/recovery?token={token}")
-
-    return jsonify(success=True, message="Check your email for a password reset link!")
+        conn.close()
+        # No user found—don't reveal this to end user
+        return jsonify(success=True, message="Check your email")
+        # PLACEHOLDER: Here is where NEW USER logic would eventually go
 
 # -- Database initialization for reference --
 def init_db():
