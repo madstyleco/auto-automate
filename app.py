@@ -8,7 +8,7 @@ from sendgrid.helpers.mail import Mail
 
 def send_reset_email(to_email, token):
     SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+    sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     html_content = f"""
         <img src='https://YOUR_LOGO_URL_TOP.png' style='width:120px;'><br><br>
         <p>You forgot your password again, didn't ya? Yeah, yeah, we know, we know .. Click the link below. You've got 1 minute.</p>
