@@ -12,7 +12,7 @@ def send_reset_email(to_email, token):
     html_content = f"""
         <img src='https://YOUR_LOGO_URL_TOP.png' style='width:120px;'><br><br>
         <p>You forgot your password again, didn't ya? Yeah, yeah, we know, we know .. Click the link below. You've got 1 minute.</p>
-        <a href="https://leosbakery1310.com/pages/reset-password?token={token}">Reset Password</a>
+        <a href="https://www.leosbakery1310.com/pages/recovery?token={token}">Reset Password</a>
         <br><br>
         <img src='https://YOUR_LOGO_URL_BOTTOM.png' style='width:60px;'>
     """
