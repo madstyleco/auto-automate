@@ -17,7 +17,7 @@ def send_reset_email(to_email, token):
         <img src='https://YOUR_LOGO_URL_BOTTOM.png' style='width:60px;'>
     """
     message = Mail(
-        from_email='support@leosbakery1310.com',
+        from_email='Leo's Bakery',
         to_emails=to_email,
         subject="Leo's Bakery",
         html_content=html_content
@@ -53,7 +53,7 @@ def recover():
         conn.close()
         # Send reset link here (placeholder for actual email logic)
         send_reset_email(email, token)
-        return jsonify(success=True, message="Check your email for a password reset link!")
+        return jsonify(success=True, message="Check your email")
     else:
         conn.close()
         # No user found—don't reveal this to end user
