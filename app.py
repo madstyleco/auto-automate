@@ -17,7 +17,7 @@ def send_reset_email(to_email, token):
         <img src='https://YOUR_LOGO_URL_BOTTOM.png' style='width:60px;'>
     """
     message = Mail(
-        from_email='Leo's Bakery',
+        from_email="Leo's Bakery <support@leosbakery1310.com>"
         to_emails=to_email,
         subject="Leo's Bakery",
         html_content=html_content
