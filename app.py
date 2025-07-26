@@ -40,25 +40,29 @@ def recover():
 
     conn = get_db()
     cur = conn.cursor()
-    # Only look up existing user
+
+    # Check if user exists
     cur.execute("SELECT id FROM users WHERE email = %s", (email,))
     user = cur.fetchone()
 
+    token = secrets.token_urlsafe(32)
+    expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).isoformat()
+
     if user:
+        # Existing user: update token/expiry
         user_id = user[0]
-        token = secrets.token_urlsafe(32)
-        expiry = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).isoformat()
         cur.execute("UPDATE users SET reset_token=%s, token_expiry=%s WHERE id=%s", (token, expiry, user_id))
-        conn.commit()
-        conn.close()
-        # Send reset link here (placeholder for actual email logic)
-        send_reset_email(email, token)
-        return jsonify(success=True, message="Check your email")
     else:
-        conn.close()
-        # No user found—don't reveal this to end user
-        return jsonify(success=True, message="Check your email")
-        # PLACEHOLDER: Here is where NEW USER logic would eventually go
+        # New user: create record with token/expiry
+        cur.execute("INSERT INTO users (email, reset_token, token_expiry) VALUES (%s, %s, %s)", (email, token, expiry))
+
+    conn.commit()
+    conn.close()
+
+    # Send reset/setup email either way
+    send_reset_email(email, token)
+
+    return jsonify(success=True, message="Check your email")
 
 # -- Database initialization for reference --
 def init_db():
