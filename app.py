@@ -63,7 +63,22 @@ def recover():
     send_reset_email(email, token)
 
     return jsonify(success=True, message="Check your email")
-
+@app.route('/user-info', methods=['POST'])
+def user_info():
+    data = request.get_json()
+    email = data.get('email', '').strip().lower()
+    if not email or '@' not in email:
+        return jsonify(success=False)
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT username FROM users WHERE email = %s", (email,))
+    user = cur.fetchone()
+    conn.close()
+    if user:
+        return jsonify(success=True, username=user[0])
+    else:
+        return jsonify(success=True, username=None)
+        
 # -- Database initialization for reference --
 def init_db():
     conn = get_db()
