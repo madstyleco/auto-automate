@@ -10,11 +10,11 @@ def send_reset_email(to_email, token):
     SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
     sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     html_content = f"""
-        <img src='https://YOUR_LOGO_URL_TOP.png' style='width:120px;'><br><br>
+        <img src='https://api.cloudflare.com/client/v4/accounts/3e2c383a08f723e6c9c78b86c60fd5ea/images/v1/06f281c2-c2d2-421f-b170-1e0c13d08500' style='width:120px;'><br><br>
         <p>You forgot your password again, didn't ya? Yeah, yeah, we know, we know .. Click the link below. You've got 1 minute.</p>
         <a href="https://www.leosbakery1310.com/pages/recovery?token={token}">Reset Password</a>
         <br><br>
-        <img src='https://YOUR_LOGO_URL_BOTTOM.png' style='width:60px;'>
+        <img src='https://api.cloudflare.com/client/v4/accounts/3e2c383a08f723e6c9c78b86c60fd5ea/images/v1/809b716e-e993-4d24-2998-f142390e9600' style='width:60px;'>
     """
     message = Mail(
         from_email="Leo's Bakery <support@leosbakery1310.com>",
