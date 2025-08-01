@@ -8,21 +8,28 @@ from sendgrid.helpers.mail import Mail
 
 def send_reset_email(to_email, token):
     SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+    if not SENDGRID_API_KEY:
+        print("❌ SendGrid API Key is missing!")
+        return
+
     sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
     html_content = f"""
-        <img src='https://api.cloudflare.com/client/v4/accounts/3e2c383a08f723e6c9c78b86c60fd5ea/images/v1/06f281c2-c2d2-421f-b170-1e0c13d08500' style='width:120px;'><br><br>
-        <p>You forgot your password again, didn't ya? Yeah, yeah, we know, we know .. Click the link below. You've got 1 minute.</p>
+        <p>You forgot your password again, didn't ya? Click the link below. You've got 1 minute.</p>
         <a href="https://www.leosbakery1310.com/pages/recovery?token={token}">Reset Password</a>
-        <br><br>
-        <img src='https://api.cloudflare.com/client/v4/accounts/3e2c383a08f723e6c9c78b86c60fd5ea/images/v1/809b716e-e993-4d24-2998-f142390e9600' style='width:60px;'>
     """
     message = Mail(
         from_email="Leo's Bakery <support@leosbakery1310.com>",
         to_emails=to_email,
-        subject="Leo's Bakery",
+        subject="Leo's Bakery - Reset Password",
         html_content=html_content
     )
-    sg.send(message)
+    
+    try:
+        response = sg.send(message)
+        print("📬 Email sent — status code:", response.status_code)
+        print("📬 Response body:", response.body)
+    except Exception as e:
+        print("❌ SendGrid failed:", e)
 
 app = Flask(__name__)
 CORS(app)
@@ -97,3 +104,4 @@ def init_db():
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)
+
